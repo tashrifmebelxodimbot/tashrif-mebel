@@ -1,15 +1,18 @@
-<label for="worker">Xodim ismi:</label>
-<input type="text" id="worker" placeholder="Salohiddin">
 
-<label for="task">Bajarilgan ish:</label>
-<input type="text" id="task" placeholder="Shedevr yigish">
-
-<label for="quantity">Soni (dona):</label>
-<input type="number" id="quantity" value="1">
-
-<label for="rate">Bitta ish narxi (so'm):</label>
-<input type="number" id="rate" placeholder="30000">
-
-<button type="button" onclick="calculateSalary()">Hisoblash</button>
-
-<div class="result" id="salaryResult">Jami ish haqi: 0 so'm</div>
+import logging from aiogram import Bot, Dispatcher, types, F from aiogram.filters import Command from aiogram.fsm.context import FSMContext from aiogram.fsm.state import State, StatesGroup from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton
+Bot tokeningizni shu yerga yozasiz
+TOKEN = "SIZNING_BOT_TOKENINGIZ"
+logging.basicConfig(level=logging.INFO) bot = Bot(token=TOKEN) dp = Dispatcher()
+Bazani vaqtincha xotirada saqlash uchun (keyinchalik SQL ulanadi)
+db_workers = {}
+Asosiy menyu tugmalari (Siz rasmda ko'rsatgan ko'rinishda)
+main_menu = ReplyKeyboardMarkup( keyboard=[ [KeyboardButton(text="🛒 Buyurtma"), KeyboardButton(text="📦 Oldindan buyurtma")], [KeyboardButton(text="👥 Mijozlar"), KeyboardButton(text="💰 Sotuvlar")], [KeyboardButton(text="📦 Mahsulotlar"), KeyboardButton(text="👷 Xodimlar")], [KeyboardButton(text="📊 Statistika"), KeyboardButton(text="💸 Rasxodlar")] ], resize_keyboard=True )
+/start buyrug'i
+@dp.message(Command("start")) async def cmd_start(message: types.Message): await message.answer( "Assalomu alaykum! Tashrif Mebel boshqaruv botiga xush kelibsiz.", reply_markup=main_menu, parse_mode="Markdown" )
+Xodimlar bo'limi bosilganda
+@dp.message(F.text == "👷 Xodimlar") async def workers_section(message: types.Message): keyboard = InlineKeyboardMarkup(inlineKeyboardButton=[ [InlineKeyboardButton(text="Salohiddin", callback_data="worker_salohiddin")], [InlineKeyboardButton(text="Fatxiddin", callback_data="worker_fatxiddin")], [InlineKeyboardButton(text="➕ Xodim qo'shish", callback_data="add_worker")] ]) await message.answer("Xodimni tanlang:", reply_markup=keyboard)
+Rasxod qo'shish tugmasi simulyatsiyasi
+@dp.message(F.text == "💸 Rasxodlar") async def rasxod_section(message: types.Message): await message.answer("Xarajat (rasxod) turi yoki izohini kiriting (masalan: yo'lkira - 180 000 so'm):")
+Botni ishga tushirish
+async def main(): await dp.start_polling(bot)
+if name == "main": import asyncio asyncio.run(main())
